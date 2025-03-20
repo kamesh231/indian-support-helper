@@ -65,7 +65,7 @@ const Navbar = () => {
               className="rounded-full hover-lift"
               asChild
             >
-              <Link to="/signup">Start Creating</Link>
+              <Link to="/dashboard">Dashboard</Link>
             </Button>
           </div>
         </nav>
@@ -116,7 +116,7 @@ const Navbar = () => {
                 className="w-full rounded-full"
                 asChild
               >
-                <Link to="/signup" onClick={toggleMenu}>Start Creating</Link>
+                <Link to="/dashboard" onClick={toggleMenu}>Dashboard</Link>
               </Button>
             </div>
           </div>
