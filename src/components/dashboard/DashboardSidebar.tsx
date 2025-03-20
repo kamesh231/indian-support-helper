@@ -80,7 +80,7 @@ const DashboardSidebar = () => {
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild tooltip="Supporters" isActive={true}>
+                <SidebarMenuButton asChild tooltip="Supporters">
                   <Link to="/dashboard/supporters">
                     <Heart />
                     <span>Supporters</span>
@@ -142,7 +142,7 @@ const DashboardSidebar = () => {
               </SidebarMenuItem>
               
               <SidebarMenuItem>
-                <SidebarMenuButton asChild tooltip="Payouts">
+                <SidebarMenuButton asChild tooltip="Payouts" isActive={window.location.pathname === "/dashboard/payouts"}>
                   <Link to="/dashboard/payouts">
                     <IndianRupee />
                     <span>Payouts</span>
