@@ -11,7 +11,7 @@ import { CodePreview } from "./CodePreview";
 
 export const ButtonGenerator = () => {
   const [buttonText, setButtonText] = useState("Buy me a coffee");
-  const [buttonColor, setButtonColor] = useState("#FFDD00");
+  const [buttonColor, setButtonColor] = useState("#F97316");
   const [textColor, setTextColor] = useState("#000000");
   const [buttonPreview, setButtonPreview] = useState(true);
 

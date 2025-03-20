@@ -11,7 +11,7 @@ import { CodePreview } from "./CodePreview";
 
 export const WidgetGenerator = () => {
   const [message, setMessage] = useState("Thanks for visiting. You can buy me a coffee if you enjoy this.");
-  const [brandColor, setBrandColor] = useState("#FFDD00");
+  const [brandColor, setBrandColor] = useState("#F97316");
   
   const generateWidgetCode = () => {
     const htmlCode = `<div style="border-radius: 12px; overflow: hidden; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); max-width: 350px; margin: 0 auto;">

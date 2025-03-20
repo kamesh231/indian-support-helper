@@ -15,10 +15,10 @@ interface ColorPickerProps {
 }
 
 const predefinedColors = [
-  "#FFDD00", // Yellow (Brand)
+  "#F97316", // Orange (Brand)
   "#000000", // Black
   "#FFFFFF", // White
-  "#F97316", // Orange
+  "#FFDD00", // Yellow
   "#8B5CF6", // Purple
   "#0EA5E9", // Blue
   "#10B981", // Green
