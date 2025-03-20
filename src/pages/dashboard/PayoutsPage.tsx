@@ -4,16 +4,16 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Settings } from "lucide-react";
+import { Settings, IndianRupee } from "lucide-react";
 
 const PayoutsPage = () => {
-  const outstandingBalance = "$5.64";
+  const outstandingBalance = "₹428.64";
   
-  // Sample payout history data
+  // Sample payout history data with INR currency
   const payoutHistory = [
-    { id: 1, date: "14 January 2024", amount: "$26", status: "COMPLETED" },
-    { id: 2, date: "14 December 2023", amount: "$26", status: "COMPLETED" },
-    { id: 3, date: "14 November 2023", amount: "$22", status: "COMPLETED" },
+    { id: 1, date: "14 January 2024", amount: "₹2,180", status: "COMPLETED" },
+    { id: 2, date: "14 December 2023", amount: "₹2,180", status: "COMPLETED" },
+    { id: 3, date: "14 November 2023", amount: "₹1,840", status: "COMPLETED" },
   ];
 
   return (
@@ -27,7 +27,10 @@ const PayoutsPage = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground mb-1">OUTSTANDING BALANCE</p>
-                <h2 className="text-4xl font-bold">{outstandingBalance}</h2>
+                <h2 className="text-4xl font-bold flex items-center">
+                  <IndianRupee className="h-5 w-5 mr-1 text-muted-foreground" />
+                  <span>{outstandingBalance.replace('₹', '')}</span>
+                </h2>
               </div>
               <div className="flex gap-2">
                 <Button className="rounded-full bg-black text-white hover:bg-black/90">
@@ -69,7 +72,10 @@ const PayoutsPage = () => {
                   payoutHistory.map((payout) => (
                     <TableRow key={payout.id}>
                       <TableCell>{payout.date}</TableCell>
-                      <TableCell>{payout.amount}</TableCell>
+                      <TableCell className="flex items-center">
+                        <IndianRupee className="h-3 w-3 mr-1 text-muted-foreground" />
+                        {payout.amount.replace('₹', '')}
+                      </TableCell>
                       <TableCell className="text-amber-500">
                         {payout.status}
                       </TableCell>
