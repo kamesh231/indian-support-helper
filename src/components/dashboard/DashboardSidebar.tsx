@@ -12,6 +12,7 @@ import {
   SidebarMenuButton, 
   SidebarMenuItem
 } from "@/components/ui/sidebar";
+import { Button } from "@/components/ui/button";
 import { 
   Coffee, 
   Home, 
@@ -24,7 +25,8 @@ import {
   LayoutTemplate, 
   Link as LinkIcon, 
   IndianRupee, 
-  Settings
+  Settings,
+  LogOut
 } from "lucide-react";
 
 const DashboardSidebar = () => {
