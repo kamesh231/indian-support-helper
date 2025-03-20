@@ -45,6 +45,9 @@ const PricingBanner = () => {
             <p className="text-muted-foreground max-w-xl">
               Only 3.5% platform fee on payments and free payouts* to your bank account
             </p>
+            <p className="text-primary font-medium mt-2">
+              So you get more in your pocket
+            </p>
           </div>
           <div className="flex items-center justify-center bg-primary/10 px-6 py-3 rounded-full">
             <span className="text-primary font-bold text-xl md:text-2xl">3.5%</span>

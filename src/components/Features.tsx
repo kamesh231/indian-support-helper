@@ -39,6 +39,7 @@ const features = [
     icon: <Percent className="h-6 w-6" />,
     title: "Low Platform Fee",
     description: "Only 3.5% platform fee on payments and free payouts* to maximize your earnings.",
+    subheading: "So you get more in your pocket",
     color: "bg-red-100 text-red-600",
   },
 ];
@@ -63,6 +64,9 @@ const FeatureCard = ({
       </div>
       <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
       <p className="text-muted-foreground">{feature.description}</p>
+      {feature.subheading && (
+        <p className="text-primary font-medium mt-1">{feature.subheading}</p>
+      )}
       {feature.title === "Low Platform Fee" && (
         <p className="text-xs text-muted-foreground mt-2">
           *Free for amounts over ₹1000
