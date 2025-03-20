@@ -14,6 +14,8 @@ import SupportersPage from "./pages/dashboard/SupportersPage";
 import PayoutsPage from "./pages/dashboard/PayoutsPage";
 import ButtonsGraphicsPage from "./pages/dashboard/ButtonsGraphicsPage";
 import SettingsPage from "./pages/dashboard/SettingsPage";
+import CreatorPage from "./pages/CreatorPage";
+import EditCreatorPage from "./pages/EditCreatorPage";
 
 const queryClient = new QueryClient();
 
@@ -28,6 +30,10 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/about" element={<About />} />
             <Route path="/creators" element={<Creators />} />
+            
+            {/* Creator Page Routes */}
+            <Route path="/creator/:username" element={<CreatorPage />} />
+            <Route path="/creator/:username/edit" element={<EditCreatorPage />} />
             
             {/* Dashboard Routes */}
             <Route path="/dashboard" element={<DashboardHome />} />

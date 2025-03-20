@@ -30,6 +30,8 @@ import {
 } from "lucide-react";
 
 const DashboardSidebar = () => {
+  const isCurrentPath = (path: string) => window.location.pathname === path;
+  
   return (
     <Sidebar>
       <SidebarHeader className="flex items-center justify-center py-4">
@@ -45,7 +47,7 @@ const DashboardSidebar = () => {
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild tooltip="Dashboard">
+                <SidebarMenuButton asChild tooltip="Dashboard" isActive={isCurrentPath("/dashboard")}>
                   <Link to="/dashboard">
                     <Home />
                     <span>Home</span>
@@ -54,8 +56,8 @@ const DashboardSidebar = () => {
               </SidebarMenuItem>
               
               <SidebarMenuItem>
-                <SidebarMenuButton asChild tooltip="View page">
-                  <Link to="/creator-page">
+                <SidebarMenuButton asChild tooltip="View page" isActive={isCurrentPath("/creator/yourusername")}>
+                  <Link to="/creator/yourusername" target="_blank">
                     <ExternalLink />
                     <span>View page</span>
                   </Link>
@@ -63,7 +65,7 @@ const DashboardSidebar = () => {
               </SidebarMenuItem>
               
               <SidebarMenuItem>
-                <SidebarMenuButton asChild tooltip="Explore creators">
+                <SidebarMenuButton asChild tooltip="Explore creators" isActive={isCurrentPath("/creators")}>
                   <Link to="/creators">
                     <Compass />
                     <span>Explore creators</span>
@@ -80,7 +82,7 @@ const DashboardSidebar = () => {
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild tooltip="Supporters">
+                <SidebarMenuButton asChild tooltip="Supporters" isActive={isCurrentPath("/dashboard/supporters")}>
                   <Link to="/dashboard/supporters">
                     <Heart />
                     <span>Supporters</span>
@@ -89,7 +91,7 @@ const DashboardSidebar = () => {
               </SidebarMenuItem>
               
               <SidebarMenuItem>
-                <SidebarMenuButton asChild tooltip="Memberships">
+                <SidebarMenuButton asChild tooltip="Memberships" isActive={isCurrentPath("/dashboard/memberships")}>
                   <Link to="/dashboard/memberships">
                     <UserPlus />
                     <span>Memberships</span>
@@ -98,7 +100,7 @@ const DashboardSidebar = () => {
               </SidebarMenuItem>
               
               <SidebarMenuItem>
-                <SidebarMenuButton asChild tooltip="Shop">
+                <SidebarMenuButton asChild tooltip="Shop" isActive={isCurrentPath("/dashboard/shop")}>
                   <Link to="/dashboard/shop">
                     <ShoppingCart />
                     <span>Shop</span>
@@ -107,7 +109,7 @@ const DashboardSidebar = () => {
               </SidebarMenuItem>
               
               <SidebarMenuItem>
-                <SidebarMenuButton asChild tooltip="Publish">
+                <SidebarMenuButton asChild tooltip="Publish" isActive={isCurrentPath("/dashboard/publish")}>
                   <Link to="/dashboard/publish">
                     <Upload />
                     <span>Publish</span>
@@ -124,7 +126,7 @@ const DashboardSidebar = () => {
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild tooltip="Buttons & Graphics">
+                <SidebarMenuButton asChild tooltip="Buttons & Graphics" isActive={isCurrentPath("/dashboard/buttons-graphics")}>
                   <Link to="/dashboard/buttons-graphics">
                     <LayoutTemplate />
                     <span>Buttons & Graphics</span>
@@ -133,7 +135,7 @@ const DashboardSidebar = () => {
               </SidebarMenuItem>
               
               <SidebarMenuItem>
-                <SidebarMenuButton asChild tooltip="Integrations">
+                <SidebarMenuButton asChild tooltip="Integrations" isActive={isCurrentPath("/dashboard/integrations")}>
                   <Link to="/dashboard/integrations">
                     <LinkIcon />
                     <span>Integrations</span>
@@ -142,7 +144,7 @@ const DashboardSidebar = () => {
               </SidebarMenuItem>
               
               <SidebarMenuItem>
-                <SidebarMenuButton asChild tooltip="Payouts" isActive={window.location.pathname === "/dashboard/payouts"}>
+                <SidebarMenuButton asChild tooltip="Payouts" isActive={isCurrentPath("/dashboard/payouts")}>
                   <Link to="/dashboard/payouts">
                     <IndianRupee />
                     <span>Payouts</span>
@@ -151,7 +153,7 @@ const DashboardSidebar = () => {
               </SidebarMenuItem>
               
               <SidebarMenuItem>
-                <SidebarMenuButton asChild tooltip="Settings">
+                <SidebarMenuButton asChild tooltip="Settings" isActive={isCurrentPath("/dashboard/settings")}>
                   <Link to="/dashboard/settings">
                     <Settings />
                     <span>Settings</span>
