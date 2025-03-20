@@ -66,7 +66,7 @@ const Hero = () => {
           transition={{ duration: 0.5, delay: 0.2 }}
           className="text-lg md:text-xl text-muted-foreground mb-10 max-w-3xl mx-auto text-balance"
         >
-          PledgePe is a simple way for Indian creators to receive support, build community, and sustain their creativity with hassle-free payments.
+          MochaFan is a simple way for Indian creators to receive support, build community, and sustain their creativity with hassle-free payments.
         </motion.p>
 
         {/* CTA Buttons */}

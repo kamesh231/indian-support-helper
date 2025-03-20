@@ -36,7 +36,7 @@ const Navbar = () => {
         {/* Logo */}
         <Link to="/" className="flex items-center space-x-2">
           <Coffee className="h-8 w-8 text-primary" />
-          <span className="font-bold text-xl md:text-2xl">PledgePe</span>
+          <span className="font-bold text-xl md:text-2xl">MochaFan</span>
         </Link>
 
         {/* Desktop Navigation */}
