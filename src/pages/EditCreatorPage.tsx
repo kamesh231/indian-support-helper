@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -13,21 +13,24 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Upload, X, Coffee, Beer, Pizza, BookText, Bookmark, Heart, ShoppingBag, ExternalLink } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 
 const EditCreatorPage = () => {
   const { username } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState("profile");
   const [isSaving, setIsSaving] = useState(false);
   
-  // Profile data
-  const [name, setName] = useState("Kamesh");
-  const [creatingText, setCreatingText] = useState("creating piano music, building Coronarelief.org, posting a new art everyday");
-  const [about, setAbout] = useState("I write about product management");
+  // Profile data with empty initial values
+  const [name, setName] = useState("");
+  const [creatingText, setCreatingText] = useState("");
+  const [about, setAbout] = useState("");
   const [videoLink, setVideoLink] = useState("");
-  const [socialLink, setSocialLink] = useState("https://theproducttown.substack.com/");
-  const [pageIcon, setPageIcon] = useState("beer");
-  const [iconText, setIconText] = useState("beer");
+  const [socialLink, setSocialLink] = useState("");
+  const [pageIcon, setPageIcon] = useState("coffee");
+  const [iconText, setIconText] = useState("coffee");
   const [themeColor, setThemeColor] = useState("#5F7FFF");
   const [showSupporterCount, setShowSupporterCount] = useState(true);
   
@@ -38,15 +41,64 @@ const EditCreatorPage = () => {
     { id: 3, name: "Shop", description: "Sell your merchandise and creations", active: false },
   ]);
 
-  const handleSave = () => {
+  // Fetch creator data if editing existing profile
+  useEffect(() => {
+    const fetchCreatorData = async () => {
+      if (!user) return;
+      
+      try {
+        const { data, error } = await supabase
+          .from('users')
+          .select('*')
+          .eq('id', user.id)
+          .single();
+          
+        if (error) throw error;
+        
+        if (data) {
+          setName(data.name || "");
+          setCreatingText(data.creating_text || "");
+          setAbout(data.bio || "");
+          // Set other fields if they exist in the database
+        }
+      } catch (error) {
+        console.error('Error fetching creator data:', error);
+      }
+    };
+    
+    fetchCreatorData();
+  }, [user]);
+
+  const handleSave = async () => {
     setIsSaving(true);
     
-    // Simulate API call
-    setTimeout(() => {
-      setIsSaving(false);
+    try {
+      if (!user) {
+        toast.error("You must be logged in to save your profile");
+        setIsSaving(false);
+        return;
+      }
+      
+      // Update user profile in database
+      const { error } = await supabase
+        .from('users')
+        .update({
+          name,
+          bio: about,
+          // Add other fields as needed
+        })
+        .eq('id', user.id);
+        
+      if (error) throw error;
+      
       toast.success("Changes saved successfully");
-      navigate(`/creator/${username || "yourusername"}`);
-    }, 1000);
+      navigate(`/creator/${username || user.id}`);
+    } catch (error) {
+      console.error('Error saving profile:', error);
+      toast.error("Failed to save changes");
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleCancel = () => {
@@ -102,8 +154,8 @@ const EditCreatorPage = () => {
                 <h2 className="text-lg font-medium">Profile photo</h2>
                 <div className="flex items-center space-x-4">
                   <Avatar className="h-24 w-24">
-                    <AvatarImage src="https://github.com/shadcn.png" />
-                    <AvatarFallback>KM</AvatarFallback>
+                    <AvatarImage src="" />
+                    <AvatarFallback>{name ? name.substring(0, 2).toUpperCase() : "U"}</AvatarFallback>
                   </Avatar>
                   <Button variant="outline" className="h-10">Upload</Button>
                 </div>
@@ -117,6 +169,7 @@ const EditCreatorPage = () => {
                     value={name} 
                     onChange={(e) => setName(e.target.value)} 
                     className="mt-1"
+                    placeholder="Your name"
                   />
                 </div>
                 
@@ -152,6 +205,7 @@ const EditCreatorPage = () => {
                     value={iconText}
                     onChange={(e) => setIconText(e.target.value)}
                     className="flex-1"
+                    placeholder="coffee, beer, etc."
                   />
                 </div>
                 
@@ -183,6 +237,7 @@ const EditCreatorPage = () => {
                   <Input 
                     value={themeColor}
                     onChange={(e) => setThemeColor(e.target.value)}
+                    placeholder="#5F7FFF"
                   />
                 </div>
               </div>
@@ -209,6 +264,7 @@ const EditCreatorPage = () => {
                     value={socialLink}
                     onChange={(e) => setSocialLink(e.target.value)}
                     className="border-0 focus-visible:ring-0"
+                    placeholder="Your website or social media link"
                   />
                   <Button variant="ghost" size="icon" className="h-8 w-8">
                     <X className="h-4 w-4" />
@@ -270,6 +326,7 @@ const EditCreatorPage = () => {
                   value={about}
                   onChange={(e) => setAbout(e.target.value)}
                   className="min-h-32"
+                  placeholder="Tell your supporters about yourself and what you create..."
                 />
               </div>
 
