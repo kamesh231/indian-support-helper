@@ -22,6 +22,14 @@ const Navbar = () => {
 
   const toggleMenu = () => setMenuOpen(!menuOpen);
 
+  // Custom MochaCup icon component with a slightly modified Coffee icon
+  const MochaCup = () => (
+    <div className="relative">
+      <Coffee className="h-8 w-8 text-primary" />
+      <div className="absolute top-4 left-1/2 transform -translate-x-1/2 w-4 h-1 bg-primary/20 rounded-full" />
+    </div>
+  );
+
   return (
     <motion.header
       initial={{ y: -100, opacity: 0 }}
@@ -35,7 +43,7 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         {/* Logo */}
         <Link to="/" className="flex items-center space-x-2">
-          <Coffee className="h-8 w-8 text-primary" />
+          <MochaCup />
           <span className="font-bold text-xl md:text-2xl">MochaFan</span>
         </Link>
 

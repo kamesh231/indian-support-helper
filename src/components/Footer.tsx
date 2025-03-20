@@ -4,13 +4,21 @@ import { Coffee } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const Footer = () => {
+  // Custom MochaCup icon component 
+  const MochaCup = () => (
+    <div className="relative">
+      <Coffee className="h-6 w-6 text-primary" />
+      <div className="absolute top-3 left-1/2 transform -translate-x-1/2 w-3 h-0.5 bg-primary/20 rounded-full" />
+    </div>
+  );
+
   return (
     <footer className="bg-secondary/80 border-t py-12 px-4 md:px-8">
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
           <div className="col-span-1 md:col-span-1">
             <Link to="/" className="flex items-center space-x-2 mb-4">
-              <Coffee className="h-6 w-6 text-primary" />
+              <MochaCup />
               <span className="font-bold text-xl">MochaFan</span>
             </Link>
             <p className="text-muted-foreground mb-4">
