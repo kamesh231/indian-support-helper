@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
@@ -8,9 +7,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { Camera, Link, X, Copy, AlertCircle } from "lucide-react";
+import { Camera, Link, X, Copy, AlertCircle, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 const SettingsPage = () => {
   const [gaCode, setGaCode] = useState("");
@@ -24,6 +24,10 @@ const SettingsPage = () => {
   const copyPageLink = () => {
     navigator.clipboard.writeText(`https://${pageLink}`);
     toast.success("Page link copied to clipboard!");
+  };
+
+  const openPageLink = () => {
+    window.open(`https://${pageLink}`, "_blank");
   };
 
   const saveChanges = () => {
@@ -47,6 +51,31 @@ const SettingsPage = () => {
         className="container mx-auto max-w-4xl py-8 px-4"
       >
         <h1 className="text-3xl font-bold mb-8">Settings</h1>
+
+        <Alert className="mb-6 border-primary/20 bg-primary/5">
+          <Link className="h-5 w-5 text-primary" />
+          <AlertTitle className="flex items-center gap-2">
+            Your Profile URL
+            <span className="text-sm font-normal text-muted-foreground">
+              (Share with your audience)
+            </span>
+          </AlertTitle>
+          <AlertDescription className="mt-2 flex items-center justify-between">
+            <span className="font-semibold text-primary">
+              mochafan.com/{pageLink.split('/').pop()}
+            </span>
+            <div className="flex gap-2">
+              <Button size="sm" variant="outline" className="gap-1" onClick={copyPageLink}>
+                <Copy className="h-3.5 w-3.5" />
+                Copy
+              </Button>
+              <Button size="sm" className="gap-1" onClick={openPageLink}>
+                <ExternalLink className="h-3.5 w-3.5" />
+                Visit
+              </Button>
+            </div>
+          </AlertDescription>
+        </Alert>
 
         <Tabs defaultValue="general" className="w-full">
           <TabsList className="mb-6 border-b rounded-none w-full justify-start h-auto bg-transparent p-0 space-x-8">
@@ -76,7 +105,6 @@ const SettingsPage = () => {
             </TabsTrigger>
           </TabsList>
 
-          {/* General Settings */}
           <TabsContent value="general">
             <Card>
               <CardHeader>
@@ -98,12 +126,14 @@ const SettingsPage = () => {
                   <Button variant="outline" size="icon" onClick={copyPageLink}>
                     <Copy className="h-4 w-4" />
                   </Button>
+                  <Button variant="outline" size="icon" onClick={openPageLink}>
+                    <ExternalLink className="h-4 w-4" />
+                  </Button>
                 </div>
               </CardContent>
             </Card>
           </TabsContent>
 
-          {/* Google Analytics Settings */}
           <TabsContent value="analytics">
             <Card>
               <CardHeader>
@@ -127,7 +157,6 @@ const SettingsPage = () => {
             </Card>
           </TabsContent>
 
-          {/* Profile Settings */}
           <TabsContent value="profile">
             <Card>
               <CardHeader>
@@ -224,7 +253,6 @@ const SettingsPage = () => {
             </Card>
           </TabsContent>
 
-          {/* Account Settings */}
           <TabsContent value="account">
             <Card className="mb-6">
               <CardHeader>

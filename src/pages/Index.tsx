@@ -1,4 +1,3 @@
-
 import * as React from "react";
 import { motion } from "framer-motion";
 import Navbar from "@/components/Navbar";
@@ -9,6 +8,10 @@ import FeaturedCreators from "@/components/FeaturedCreators";
 import Testimonials from "@/components/Testimonials";
 import CTASection from "@/components/CTASection";
 import Footer from "@/components/Footer";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Trophy, Heart, ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const Index = () => {
   return (
@@ -18,6 +21,7 @@ const Index = () => {
         <Hero />
         <Features />
         <PricingBanner />
+        <TopCreatorsLeaderboard />
         <HowItWorks />
         <FeaturedCreators />
         <Testimonials />
@@ -58,6 +62,130 @@ const PricingBanner = () => {
           <p className="text-xs text-muted-foreground">
             *Free payouts available for amounts over ₹1000, smaller amounts may incur a nominal fee.
           </p>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+// New component for Top Creators Leaderboard
+const TopCreatorsLeaderboard = () => {
+  const topCreators = [
+    { id: 1, name: "Ananya Sharma", username: "ananya", avatar: "https://i.pravatar.cc/150?img=1", supporters: 245, category: "Artist" },
+    { id: 2, name: "Vikram Mehta", username: "vikram", avatar: "https://i.pravatar.cc/150?img=2", supporters: 189, category: "Musician" },
+    { id: 3, name: "Priya Patel", username: "priya", avatar: "https://i.pravatar.cc/150?img=3", supporters: 176, category: "Writer" },
+    { id: 4, name: "Raj Kumar", username: "rajkumar", avatar: "https://i.pravatar.cc/150?img=4", supporters: 152, category: "Podcaster" },
+    { id: 5, name: "Maya Desai", username: "maya", avatar: "https://i.pravatar.cc/150?img=5", supporters: 124, category: "Photographer" },
+  ];
+
+  return (
+    <section className="py-16 px-4 md:px-8 bg-white">
+      <div className="max-w-7xl mx-auto">
+        <div className="text-center mb-12">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+            className="inline-flex items-center gap-2 bg-amber-100 text-amber-700 px-4 py-1.5 rounded-full mb-4"
+          >
+            <Trophy className="h-4 w-4" />
+            <span className="font-medium">Top Creators</span>
+          </motion.div>
+          
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="text-3xl md:text-4xl font-bold mb-4"
+          >
+            Meet Our Rising Stars
+          </motion.h2>
+          
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="text-muted-foreground text-lg max-w-2xl mx-auto"
+          >
+            These creators are building passionate communities and receiving the most support
+          </motion.p>
+        </div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+          className="grid grid-cols-1 md:grid-cols-3 gap-6"
+        >
+          {topCreators.map((creator, index) => (
+            <div 
+              key={creator.id}
+              className={`bg-white border rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow ${
+                index === 0 ? "md:col-span-3 flex flex-col md:flex-row" : ""
+              }`}
+            >
+              <div className={`${index === 0 ? "md:w-1/3" : ""}`}>
+                <div className="relative">
+                  <img 
+                    src={`https://images.unsplash.com/photo-${1570000000000 + index * 10000}?w=500&auto=format`} 
+                    alt={creator.name} 
+                    className="w-full aspect-video object-cover"
+                  />
+                  {index === 0 && (
+                    <div className="absolute top-3 left-3 bg-amber-100 text-amber-800 px-3 py-1 rounded-full text-sm font-medium flex items-center gap-1">
+                      <Trophy className="h-3.5 w-3.5" />
+                      <span>#1 This Month</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+              
+              <div className={`p-5 ${index === 0 ? "md:w-2/3" : ""}`}>
+                <div className="flex items-start justify-between">
+                  <div className="flex items-center gap-3">
+                    <Avatar>
+                      <AvatarImage src={creator.avatar} />
+                      <AvatarFallback>{creator.name.substring(0, 2)}</AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <h3 className="font-semibold text-lg">{creator.name}</h3>
+                      <p className="text-sm text-muted-foreground">@{creator.username}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center text-primary font-medium">
+                    <Heart className="h-4 w-4 mr-1" />
+                    <span>{creator.supporters}</span>
+                  </div>
+                </div>
+                
+                <div className="mt-4">
+                  <p className="text-sm text-muted-foreground mb-4">
+                    {index === 0 
+                      ? "Creating amazing content and building a vibrant community. Join hundreds of others supporting their journey."
+                      : creator.category}
+                  </p>
+                  <Link to={`/creator/${creator.username}`}>
+                    <Button variant={index === 0 ? "default" : "outline"} className="w-full">
+                      <span>Visit Page</span>
+                      <ArrowRight className="h-4 w-4 ml-1" />
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+            </div>
+          ))}
+        </motion.div>
+        
+        <div className="text-center mt-10">
+          <Link to="/creators">
+            <Button variant="outline" size="lg">
+              View All Creators
+            </Button>
+          </Link>
         </div>
       </div>
     </section>

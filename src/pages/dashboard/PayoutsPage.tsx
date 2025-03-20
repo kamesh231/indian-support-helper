@@ -4,10 +4,24 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Settings, IndianRupee } from "lucide-react";
+import { Settings, IndianRupee, AlertTriangle, ShieldCheck } from "lucide-react";
+import { toast } from "sonner";
+import { useState } from "react";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 const PayoutsPage = () => {
   const outstandingBalance = "₹428.64";
+  const minimumPayout = "₹1000";
+  const [kycVerified, setKycVerified] = useState(false);
+  const [showKycDialog, setShowKycDialog] = useState(false);
+  const [showRequestPayoutDialog, setShowRequestPayoutDialog] = useState(false);
+  const [panNumber, setPanNumber] = useState("");
+  const [accountNumber, setAccountNumber] = useState("");
+  const [ifscCode, setIfscCode] = useState("");
+  const [accountName, setAccountName] = useState("");
   
   // Sample payout history data with INR currency
   const payoutHistory = [
@@ -16,10 +30,71 @@ const PayoutsPage = () => {
     { id: 3, date: "14 November 2023", amount: "₹1,840", status: "COMPLETED" },
   ];
 
+  const handleRequestPayout = () => {
+    if (!kycVerified) {
+      setShowKycDialog(true);
+      return;
+    }
+    
+    const balance = parseFloat(outstandingBalance.replace('₹', '').replace(',', ''));
+    const minimum = parseFloat(minimumPayout.replace('₹', '').replace(',', ''));
+    
+    if (balance < minimum) {
+      toast.error(`Minimum payout amount is ${minimumPayout}`);
+      return;
+    }
+    
+    setShowRequestPayoutDialog(true);
+  };
+  
+  const submitKyc = () => {
+    if (!panNumber || !accountNumber || !ifscCode || !accountName) {
+      toast.error("Please fill in all required fields");
+      return;
+    }
+    
+    // In a real app, this would submit KYC details to the backend
+    toast.success("KYC verification initiated. We'll review your details shortly.");
+    setKycVerified(true);
+    setShowKycDialog(false);
+    
+    // After KYC verification, show the payout dialog
+    setTimeout(() => {
+      setShowRequestPayoutDialog(true);
+    }, 500);
+  };
+  
+  const confirmPayout = () => {
+    // In a real app, this would request a payout
+    toast.success("Payout request submitted successfully!");
+    setShowRequestPayoutDialog(false);
+  };
+
   return (
     <DashboardLayout>
       <div className="flex flex-col gap-6">
         <h1 className="text-2xl font-bold">Payout</h1>
+        
+        {/* KYC Status Card */}
+        {!kycVerified && (
+          <Alert variant="destructive" className="bg-amber-50 text-amber-800 border-amber-200">
+            <AlertTriangle className="h-5 w-5" />
+            <AlertTitle>KYC Verification Required</AlertTitle>
+            <AlertDescription>
+              Complete your KYC verification to request payouts. We need your PAN card and bank account details.
+            </AlertDescription>
+          </Alert>
+        )}
+        
+        {kycVerified && (
+          <Alert variant="default" className="bg-green-50 text-green-800 border-green-200">
+            <ShieldCheck className="h-5 w-5" />
+            <AlertTitle>KYC Verified</AlertTitle>
+            <AlertDescription>
+              Your account is verified and ready to receive payouts.
+            </AlertDescription>
+          </Alert>
+        )}
         
         {/* Outstanding Balance Card */}
         <Card>
@@ -31,10 +106,16 @@ const PayoutsPage = () => {
                   <IndianRupee className="h-5 w-5 mr-1 text-muted-foreground" />
                   <span>{outstandingBalance.replace('₹', '')}</span>
                 </h2>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Minimum payout amount: {minimumPayout}
+                </p>
               </div>
               <div className="flex gap-2">
-                <Button className="rounded-full bg-black text-white hover:bg-black/90">
-                  Finish Onboarding
+                <Button 
+                  className="rounded-full bg-black text-white hover:bg-black/90"
+                  onClick={handleRequestPayout}
+                >
+                  Request Payout
                 </Button>
                 <Popover>
                   <PopoverTrigger asChild>
@@ -98,6 +179,103 @@ const PayoutsPage = () => {
           </CardContent>
         </Card>
       </div>
+      
+      {/* KYC Dialog */}
+      <Dialog open={showKycDialog} onOpenChange={setShowKycDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>KYC Verification</DialogTitle>
+            <DialogDescription>
+              Complete your KYC verification to request payouts. This is required by regulations.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="pan">PAN Card Number*</Label>
+              <Input 
+                id="pan" 
+                placeholder="ABCDE1234F" 
+                value={panNumber}
+                onChange={(e) => setPanNumber(e.target.value)}
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="account-name">Account Holder Name*</Label>
+              <Input 
+                id="account-name" 
+                placeholder="Full name as per bank records" 
+                value={accountName}
+                onChange={(e) => setAccountName(e.target.value)}
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="account">Bank Account Number*</Label>
+              <Input 
+                id="account" 
+                placeholder="Your bank account number" 
+                value={accountNumber}
+                onChange={(e) => setAccountNumber(e.target.value)}
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="ifsc">IFSC Code*</Label>
+              <Input 
+                id="ifsc" 
+                placeholder="SBIN0000123" 
+                value={ifscCode}
+                onChange={(e) => setIfscCode(e.target.value)}
+              />
+            </div>
+          </div>
+          
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowKycDialog(false)}>
+              Cancel
+            </Button>
+            <Button onClick={submitKyc}>
+              Submit Verification
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Request Payout Dialog */}
+      <Dialog open={showRequestPayoutDialog} onOpenChange={setShowRequestPayoutDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Request Payout</DialogTitle>
+            <DialogDescription>
+              Your payout will be processed within 24-48 hours.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="py-4">
+            <div className="bg-secondary p-4 rounded-lg">
+              <p className="font-medium">Amount to be paid out:</p>
+              <p className="text-2xl font-bold flex items-center mt-1">
+                <IndianRupee className="h-4 w-4 mr-1" />
+                {outstandingBalance.replace('₹', '')}
+              </p>
+              <p className="text-sm text-muted-foreground mt-2">
+                Will be transferred to bank account ending with {accountNumber.slice(-4) || "****"}
+              </p>
+            </div>
+          </div>
+          
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowRequestPayoutDialog(false)}>
+              Cancel
+            </Button>
+            <Button onClick={confirmPayout}>
+              Confirm Payout
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </DashboardLayout>
   );
 };
