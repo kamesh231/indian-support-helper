@@ -1,5 +1,6 @@
+
 import React, { useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,6 +13,7 @@ import { Share2, Edit, MoreHorizontal, Check, X, Heart, Twitter, Facebook, Mail,
 
 const CreatorPage = () => {
   const { username } = useParams();
+  const navigate = useNavigate();
   const [showShareDialog, setShowShareDialog] = useState(false);
   const [pageLink, setPageLink] = useState(`mochafan.com/${username || "yourusername"}`);
   const [isSupporter, setIsSupporter] = useState(true);
@@ -46,6 +48,10 @@ const CreatorPage = () => {
     // Implement actual support logic
   };
 
+  const handleEditPage = () => {
+    navigate(`/creator/${username || "yourusername"}/edit`);
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header/Navbar */}
@@ -74,7 +80,12 @@ const CreatorPage = () => {
                 <Share2 className="h-4 w-4" />
               </Button>
               
-              <Button variant="outline">Edit page</Button>
+              <Button 
+                variant="outline"
+                onClick={handleEditPage}
+              >
+                Edit page
+              </Button>
               
               <Button>+ Create</Button>
               
@@ -104,7 +115,7 @@ const CreatorPage = () => {
             <div className="bg-white rounded-lg shadow-sm p-6">
               <div className="flex items-start justify-between mb-4">
                 <h3 className="text-xl font-semibold">About {creator.name}</h3>
-                <Button variant="ghost" size="sm">Edit</Button>
+                <Button variant="ghost" size="sm" onClick={handleEditPage}>Edit</Button>
               </div>
               <p className="text-gray-700">{creator.description}</p>
               
@@ -155,10 +166,14 @@ const CreatorPage = () => {
                       prefix="$"
                     />
                     <div className="flex divide-x border border-l-0 rounded-r-md overflow-hidden">
-                      <Button variant="custom" className="rounded-none px-2 py-1 h-10 bg-gray-50 hover:bg-gray-100">+25</Button>
-                      <Button variant="custom" className="rounded-none px-2 py-1 h-10 bg-gray-50 hover:bg-gray-100">+50</Button>
                       <Button variant="custom" className="rounded-none px-2 py-1 h-10 bg-gray-50 hover:bg-gray-100">+100</Button>
+                      <Button variant="custom" className="rounded-none px-2 py-1 h-10 bg-gray-50 hover:bg-gray-100">+200</Button>
+                      <Button variant="custom" className="rounded-none px-2 py-1 h-10 bg-gray-50 hover:bg-gray-100">+500</Button>
                     </div>
+                  </div>
+                  <div className="flex divide-x border border-t-0 rounded-b-md overflow-hidden mt-px">
+                    <Button variant="custom" className="flex-1 rounded-none px-2 py-1 h-10 bg-gray-50 hover:bg-gray-100">+1000</Button>
+                    <Button variant="custom" className="flex-1 rounded-none px-2 py-1 h-10 bg-gray-50 hover:bg-gray-100">+2000</Button>
                   </div>
                 </div>
                 

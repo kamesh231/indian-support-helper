@@ -10,7 +10,9 @@ import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Upload, X, Coffee, Beer, Pizza, BookText, Bookmark, Heart, ShoppingBag } from "lucide-react";
+import { Upload, X, Coffee, Beer, Pizza, BookText, Bookmark, Heart, ShoppingBag, ExternalLink } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 
 const EditCreatorPage = () => {
   const { username } = useParams();
@@ -20,10 +22,11 @@ const EditCreatorPage = () => {
   
   // Profile data
   const [name, setName] = useState("Kamesh");
+  const [creatingText, setCreatingText] = useState("creating piano music, building Coronarelief.org, posting a new art everyday");
   const [about, setAbout] = useState("I write about product management");
   const [videoLink, setVideoLink] = useState("");
   const [socialLink, setSocialLink] = useState("https://theproducttown.substack.com/");
-  const [pageIcon, setPageIcon] = useState("coffee");
+  const [pageIcon, setPageIcon] = useState("beer");
   const [iconText, setIconText] = useState("beer");
   const [themeColor, setThemeColor] = useState("#5F7FFF");
   const [showSupporterCount, setShowSupporterCount] = useState(true);
@@ -56,6 +59,16 @@ const EditCreatorPage = () => {
     { value: "pizza", label: "Pizza", icon: <Pizza className="h-5 w-5" /> },
     { value: "book", label: "Book", icon: <BookText className="h-5 w-5" /> },
   ];
+  
+  const getIconComponent = (iconName) => {
+    switch(iconName) {
+      case "coffee": return <Coffee className="h-5 w-5" />;
+      case "beer": return <Beer className="h-5 w-5" />;
+      case "pizza": return <Pizza className="h-5 w-5" />;
+      case "book": return <BookText className="h-5 w-5" />;
+      default: return <Coffee className="h-5 w-5" />;
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -66,7 +79,7 @@ const EditCreatorPage = () => {
             <Button variant="outline" onClick={handleCancel}>
               Cancel
             </Button>
-            <Button onClick={handleSave} disabled={isSaving}>
+            <Button onClick={handleSave} disabled={isSaving} className="bg-blue-600 hover:bg-blue-700">
               {isSaving ? "Saving..." : "Save"}
             </Button>
           </div>
@@ -113,7 +126,8 @@ const EditCreatorPage = () => {
                     id="creator-content"
                     placeholder="I make videos about tech, share travel photos..."
                     className="mt-1"
-                    value="creating piano music, building Coronarelief.org, posting a new art everyday"
+                    value={creatingText}
+                    onChange={(e) => setCreatingText(e.target.value)}
                   />
                 </div>
               </div>
@@ -126,10 +140,7 @@ const EditCreatorPage = () => {
                 <div className="flex items-center space-x-4">
                   <div className="relative">
                     <div className="border rounded-md p-2 w-16 flex items-center justify-center">
-                      {pageIcon === "coffee" && <Coffee className="h-6 w-6" />}
-                      {pageIcon === "beer" && <Beer className="h-6 w-6" />}
-                      {pageIcon === "pizza" && <Pizza className="h-6 w-6" />}
-                      {pageIcon === "book" && <BookText className="h-6 w-6" />}
+                      {getIconComponent(pageIcon)}
                     </div>
                     <div className="absolute top-0 right-0 transform translate-x-1/2 -translate-y-1/2">
                       <Button variant="outline" size="icon" className="h-6 w-6 rounded-full bg-white">
@@ -148,9 +159,12 @@ const EditCreatorPage = () => {
                   {iconOptions.map((option) => (
                     <Button 
                       key={option.value}
-                      variant="outline"
+                      variant={pageIcon === option.value ? "default" : "outline"}
                       className="flex items-center space-x-2 rounded-full"
-                      onClick={() => setPageIcon(option.value)}
+                      onClick={() => {
+                        setPageIcon(option.value);
+                        setIconText(option.label.toLowerCase());
+                      }}
                     >
                       {option.icon}
                       <span>{option.label}</span>
@@ -231,6 +245,11 @@ const EditCreatorPage = () => {
                       </div>
                       <p className="text-sm text-gray-500 mt-1">{item.description}</p>
                     </div>
+                    {item.id !== 1 && (
+                      <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                        <ExternalLink className="h-4 w-4" />
+                      </Button>
+                    )}
                     {item.id !== 1 && (
                       <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
                         <svg width="20" height="20" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
