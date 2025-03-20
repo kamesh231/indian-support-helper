@@ -13,6 +13,7 @@ import DashboardHome from "./pages/dashboard/DashboardHome";
 import SupportersPage from "./pages/dashboard/SupportersPage";
 import PayoutsPage from "./pages/dashboard/PayoutsPage";
 import ButtonsGraphicsPage from "./pages/dashboard/ButtonsGraphicsPage";
+import SettingsPage from "./pages/dashboard/SettingsPage";
 
 const queryClient = new QueryClient();
 
@@ -33,6 +34,7 @@ const App = () => (
             <Route path="/dashboard/supporters" element={<SupportersPage />} />
             <Route path="/dashboard/payouts" element={<PayoutsPage />} />
             <Route path="/dashboard/buttons-graphics" element={<ButtonsGraphicsPage />} />
+            <Route path="/dashboard/settings" element={<SettingsPage />} />
             
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
