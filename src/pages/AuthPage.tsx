@@ -1,6 +1,6 @@
 
-import { useState } from "react";
-import { useNavigate, Navigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,6 +19,16 @@ const AuthPage = () => {
   const [activeTab, setActiveTab] = useState("login");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    // Check URL parameters for tab selection
+    const searchParams = new URLSearchParams(location.search);
+    const tabParam = searchParams.get("tab");
+    if (tabParam === "register") {
+      setActiveTab("register");
+    }
+  }, [location]);
 
   if (user && !isLoading) {
     return <Navigate to="/dashboard" replace />;

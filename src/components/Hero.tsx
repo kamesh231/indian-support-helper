@@ -77,7 +77,7 @@ const Hero = () => {
           className="flex flex-col sm:flex-row items-center justify-center gap-4"
         >
           <Button size="lg" className="rounded-full text-base px-8 hover-lift h-12 w-full sm:w-auto" asChild>
-            <Link to="/signup">
+            <Link to="/auth?tab=register">
               Start creating
             </Link>
           </Button>
