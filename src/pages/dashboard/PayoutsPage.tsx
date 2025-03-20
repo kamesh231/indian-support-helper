@@ -1,4 +1,7 @@
 
+import { useState, useEffect } from "react";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -6,15 +9,15 @@ import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Settings, IndianRupee, AlertTriangle, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
-import { useState } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 const PayoutsPage = () => {
-  const outstandingBalance = "₹428.64";
-  const minimumPayout = "₹1000";
+  const { user } = useAuth();
+  const [outstandingBalance, setOutstandingBalance] = useState("₹0");
+  const [minimumPayout] = useState("₹1000");
   const [kycVerified, setKycVerified] = useState(false);
   const [showKycDialog, setShowKycDialog] = useState(false);
   const [showRequestPayoutDialog, setShowRequestPayoutDialog] = useState(false);
@@ -22,14 +25,48 @@ const PayoutsPage = () => {
   const [accountNumber, setAccountNumber] = useState("");
   const [ifscCode, setIfscCode] = useState("");
   const [accountName, setAccountName] = useState("");
+  const [payoutHistory, setPayoutHistory] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   
-  // Sample payout history data with INR currency
-  const payoutHistory = [
-    { id: 1, date: "14 January 2024", amount: "₹2,180", status: "COMPLETED" },
-    { id: 2, date: "14 December 2023", amount: "₹2,180", status: "COMPLETED" },
-    { id: 3, date: "14 November 2023", amount: "₹1,840", status: "COMPLETED" },
-  ];
-
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (!user) return;
+      
+      setIsLoading(true);
+      
+      try {
+        // Get user profile for KYC status and balance
+        const { data: userData, error: userError } = await supabase
+          .from('users')
+          .select('total_tips, kyc_completed, bank_account, ifsc_code')
+          .eq('id', user.id)
+          .single();
+          
+        if (userError) throw userError;
+        
+        // Get payout history
+        const { data: payoutData, error: payoutError } = await supabase
+          .from('payout_requests')
+          .select('*')
+          .eq('creator_id', user.id);
+          
+        if (payoutError) throw payoutError;
+        
+        setOutstandingBalance(`₹${userData?.total_tips || 0}`);
+        setKycVerified(userData?.kyc_completed || false);
+        setAccountNumber(userData?.bank_account || "");
+        setIfscCode(userData?.ifsc_code || "");
+        setPayoutHistory(payoutData || []);
+      } catch (error) {
+        console.error("Error fetching payout data:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    fetchUserData();
+  }, [user]);
+  
   const handleRequestPayout = () => {
     if (!kycVerified) {
       setShowKycDialog(true);
@@ -47,27 +84,70 @@ const PayoutsPage = () => {
     setShowRequestPayoutDialog(true);
   };
   
-  const submitKyc = () => {
+  const submitKyc = async () => {
     if (!panNumber || !accountNumber || !ifscCode || !accountName) {
       toast.error("Please fill in all required fields");
       return;
     }
     
-    // In a real app, this would submit KYC details to the backend
-    toast.success("KYC verification initiated. We'll review your details shortly.");
-    setKycVerified(true);
-    setShowKycDialog(false);
-    
-    // After KYC verification, show the payout dialog
-    setTimeout(() => {
-      setShowRequestPayoutDialog(true);
-    }, 500);
+    try {
+      const { error } = await supabase
+        .from('users')
+        .update({
+          kyc_completed: true,
+          bank_account: accountNumber,
+          ifsc_code: ifscCode
+        })
+        .eq('id', user.id);
+        
+      if (error) throw error;
+      
+      toast.success("KYC verification initiated. We'll review your details shortly.");
+      setKycVerified(true);
+      setShowKycDialog(false);
+      
+      // After KYC verification, show the payout dialog
+      setTimeout(() => {
+        setShowRequestPayoutDialog(true);
+      }, 500);
+    } catch (error) {
+      console.error("Error updating KYC status:", error);
+      toast.error("Failed to submit KYC details. Please try again.");
+    }
   };
   
-  const confirmPayout = () => {
-    // In a real app, this would request a payout
-    toast.success("Payout request submitted successfully!");
-    setShowRequestPayoutDialog(false);
+  const confirmPayout = async () => {
+    try {
+      const amountRequested = parseFloat(outstandingBalance.replace('₹', '').replace(',', ''));
+      
+      // Call the request_payout function
+      const { data, error } = await supabase.rpc(
+        'request_payout',
+        { 
+          p_creator_id: user.id, 
+          p_amount: amountRequested 
+        }
+      );
+      
+      if (error) throw error;
+      
+      // Update the local state
+      const newPayout = {
+        id: data,
+        date: new Date().toLocaleDateString(),
+        amount: outstandingBalance,
+        status: 'PENDING'
+      };
+      
+      setPayoutHistory([newPayout, ...payoutHistory]);
+      setOutstandingBalance("₹0");
+      
+      toast.success("Payout request submitted successfully!");
+      setShowRequestPayoutDialog(false);
+    } catch (error) {
+      console.error("Error requesting payout:", error);
+      toast.error(error.message || "Failed to request payout. Please try again.");
+    }
   };
 
   return (
@@ -152,13 +232,19 @@ const PayoutsPage = () => {
                 {payoutHistory.length > 0 ? (
                   payoutHistory.map((payout) => (
                     <TableRow key={payout.id}>
-                      <TableCell>{payout.date}</TableCell>
+                      <TableCell>
+                        {new Date(payout.created_at).toLocaleDateString('en-US', {
+                          day: 'numeric',
+                          month: 'long',
+                          year: 'numeric'
+                        })}
+                      </TableCell>
                       <TableCell className="flex items-center">
                         <IndianRupee className="h-3 w-3 mr-1 text-muted-foreground" />
-                        {payout.amount.replace('₹', '')}
+                        {payout.amount_requested}
                       </TableCell>
                       <TableCell className="text-amber-500">
-                        {payout.status}
+                        {payout.status.toUpperCase()}
                       </TableCell>
                     </TableRow>
                   ))

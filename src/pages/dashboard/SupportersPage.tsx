@@ -1,5 +1,7 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -11,25 +13,48 @@ import { Input } from "@/components/ui/input";
 
 const SupportersPage = () => {
   const [activeTab, setActiveTab] = useState("one-time");
+  const [supporters, setSupporters] = useState([]);
+  const [totalEarnings, setTotalEarnings] = useState(0);
+  const [supportersCount, setSupportersCount] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+  const { user } = useAuth();
   
-  const supporters = [
-    {
-      id: 1,
-      name: "Someone",
-      email: "venkata.motamarry@gmail.com",
-      amount: "₹500.00",
-      date: "1 week ago",
-      avatar: "/public/lovable-uploads/023184f5-c2e9-4e5d-a8ba-421cdff66caf.png",
-    },
-    {
-      id: 2,
-      name: "Someone",
-      email: "venkata.motamarry@gmail.com",
-      amount: "₹100.00",
-      date: "1 week ago",
-      avatar: "/public/lovable-uploads/023184f5-c2e9-4e5d-a8ba-421cdff66caf.png",
-    },
-  ];
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (!user) return;
+      
+      setIsLoading(true);
+      
+      try {
+        // Get user's tips
+        const { data: tipsData, error: tipsError } = await supabase
+          .from('tips')
+          .select('*')
+          .eq('creator_id', user.id);
+          
+        if (tipsError) throw tipsError;
+        
+        // Get user profile for total_tips
+        const { data: userData, error: userError } = await supabase
+          .from('users')
+          .select('total_tips')
+          .eq('id', user.id)
+          .single();
+          
+        if (userError) throw userError;
+        
+        setSupporters(tipsData || []);
+        setTotalEarnings(userData?.total_tips || 0);
+        setSupportersCount(tipsData?.length || 0);
+      } catch (error) {
+        console.error("Error fetching supporters data:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    fetchUserData();
+  }, [user]);
 
   return (
     <DashboardLayout>
@@ -58,7 +83,7 @@ const SupportersPage = () => {
               <Card>
                 <CardContent className="pt-6">
                   <div className="flex flex-col items-center text-center">
-                    <span className="text-4xl font-bold">1</span>
+                    <span className="text-4xl font-bold">{supportersCount}</span>
                     <div className="flex items-center mt-2 text-muted-foreground">
                       <Heart className="h-4 w-4 mr-1" /> Supporters
                     </div>
@@ -68,7 +93,7 @@ const SupportersPage = () => {
               <Card>
                 <CardContent className="pt-6">
                   <div className="flex flex-col items-center text-center">
-                    <span className="text-4xl font-bold">₹7</span>
+                    <span className="text-4xl font-bold">₹{totalEarnings}</span>
                     <div className="flex items-center mt-2 text-muted-foreground">
                       <Calendar className="h-4 w-4 mr-1" /> Last 30 days
                     </div>
@@ -78,7 +103,7 @@ const SupportersPage = () => {
               <Card>
                 <CardContent className="pt-6">
                   <div className="flex flex-col items-center text-center">
-                    <span className="text-4xl font-bold">₹7</span>
+                    <span className="text-4xl font-bold">₹{totalEarnings}</span>
                     <div className="flex items-center mt-2 text-muted-foreground">
                       <Clock className="h-4 w-4 mr-1" /> All-time
                     </div>
@@ -111,29 +136,47 @@ const SupportersPage = () => {
                 <div className="overflow-x-auto">
                   <Table>
                     <TableBody>
-                      {supporters.map((supporter) => (
-                        <TableRow key={supporter.id}>
-                          <TableCell>
-                            <div className="flex items-center gap-3">
-                              <Avatar className="h-10 w-10">
-                                <AvatarImage src={supporter.avatar} alt={supporter.name} />
-                                <AvatarFallback>S</AvatarFallback>
-                              </Avatar>
-                              <div>
-                                <div className="font-medium">{supporter.name}</div>
-                                <div className="text-sm text-muted-foreground">{supporter.email}</div>
+                      {supporters.length > 0 ? (
+                        supporters.map((supporter, index) => (
+                          <TableRow key={supporter.id || index}>
+                            <TableCell>
+                              <div className="flex items-center gap-3">
+                                <Avatar className="h-10 w-10">
+                                  <AvatarImage src="/placeholder.svg" alt="Supporter" />
+                                  <AvatarFallback>S</AvatarFallback>
+                                </Avatar>
+                                <div>
+                                  <div className="font-medium">
+                                    {supporter.anonymous ? 'Anonymous' : 'Someone'}
+                                  </div>
+                                  <div className="text-sm text-muted-foreground">
+                                    {supporter.anonymous ? 'Anonymous' : 'anonymous@mail.com'}
+                                  </div>
+                                </div>
                               </div>
+                            </TableCell>
+                            <TableCell className="text-right font-medium">₹{supporter.amount}</TableCell>
+                            <TableCell className="text-right text-muted-foreground">
+                              {new Date(supporter.timestamp).toLocaleDateString()}
+                            </TableCell>
+                            <TableCell className="text-right">
+                              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                                <MoreHorizontal className="h-4 w-4" />
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      ) : (
+                        <TableRow>
+                          <TableCell colSpan={4} className="h-24 text-center">
+                            <div className="flex flex-col items-center justify-center gap-2 py-4">
+                              <Heart className="h-10 w-10 text-muted-foreground/40" />
+                              <p className="text-muted-foreground">No supporters yet</p>
+                              <p className="text-sm text-muted-foreground/60">Share your page to start receiving support</p>
                             </div>
                           </TableCell>
-                          <TableCell className="text-right font-medium">{supporter.amount}</TableCell>
-                          <TableCell className="text-right text-muted-foreground">{supporter.date}</TableCell>
-                          <TableCell className="text-right">
-                            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                              <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                          </TableCell>
                         </TableRow>
-                      ))}
+                      )}
                     </TableBody>
                   </Table>
                 </div>

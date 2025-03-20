@@ -1,5 +1,7 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -11,25 +13,48 @@ import { Separator } from "@/components/ui/separator";
 
 const DashboardHome = () => {
   const [timeframe, setTimeframe] = useState("30days");
+  const [recentSupporters, setRecentSupporters] = useState([]);
+  const [totalEarnings, setTotalEarnings] = useState(0);
+  const [supportersCount, setSupportersCount] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+  const { user } = useAuth();
   
-  const recentSupporters = [
-    {
-      id: 1,
-      name: "Someone",
-      email: "venkata.motamarry@gmail.com",
-      amount: "₹500.00",
-      date: "1 week ago",
-      avatar: "/public/lovable-uploads/023184f5-c2e9-4e5d-a8ba-421cdff66caf.png",
-    },
-    {
-      id: 2,
-      name: "Someone",
-      email: "venkata.motamarry@gmail.com",
-      amount: "₹100.00",
-      date: "1 week ago",
-      avatar: "/public/lovable-uploads/023184f5-c2e9-4e5d-a8ba-421cdff66caf.png",
-    },
-  ];
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (!user) return;
+      
+      setIsLoading(true);
+      
+      try {
+        // Get user's tips
+        const { data: tipsData, error: tipsError } = await supabase
+          .from('tips')
+          .select('*')
+          .eq('creator_id', user.id);
+          
+        if (tipsError) throw tipsError;
+        
+        // Get user profile for total_tips
+        const { data: userData, error: userError } = await supabase
+          .from('users')
+          .select('total_tips')
+          .eq('id', user.id)
+          .single();
+          
+        if (userError) throw userError;
+        
+        setRecentSupporters(tipsData || []);
+        setTotalEarnings(userData?.total_tips || 0);
+        setSupportersCount(tipsData?.length || 0);
+      } catch (error) {
+        console.error("Error fetching dashboard data:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    fetchUserData();
+  }, [user]);
 
   return (
     <DashboardLayout>
@@ -39,11 +64,17 @@ const DashboardHome = () => {
           <div className="flex items-center gap-4">
             <Avatar className="h-16 w-16">
               <AvatarImage src="https://github.com/shadcn.png" alt="Creator" />
-              <AvatarFallback>CN</AvatarFallback>
+              <AvatarFallback>
+                {user?.user_metadata?.name?.charAt(0) || 'U'}
+              </AvatarFallback>
             </Avatar>
             <div>
-              <h1 className="text-2xl font-bold">Hi, Kamesh</h1>
-              <p className="text-muted-foreground">pledgepe.com/kamesh231</p>
+              <h1 className="text-2xl font-bold">
+                Hi, {user?.user_metadata?.name || 'Creator'}
+              </h1>
+              <p className="text-muted-foreground">
+                pledgepe.com/{user?.user_metadata?.name?.toLowerCase() || 'yourcreatorname'}
+              </p>
             </div>
           </div>
           <Button className="md:w-auto w-full">
@@ -69,11 +100,11 @@ const DashboardHome = () => {
           </CardHeader>
           <CardContent>
             <div className="pt-4">
-              <h2 className="text-4xl font-bold">₹7</h2>
+              <h2 className="text-4xl font-bold">₹{totalEarnings}</h2>
               <div className="mt-4 flex flex-wrap gap-8">
                 <div className="flex items-center gap-2">
                   <span className="h-3 w-3 rounded-full bg-yellow-200"></span>
-                  <span>₹7 Supporters</span>
+                  <span>₹{totalEarnings} Supporters</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="h-3 w-3 rounded-full bg-pink-200"></span>
@@ -93,7 +124,7 @@ const DashboardHome = () => {
           <Card>
             <CardContent className="pt-6">
               <div className="flex flex-col items-center text-center">
-                <span className="text-4xl font-bold">1</span>
+                <span className="text-4xl font-bold">{supportersCount}</span>
                 <div className="flex items-center mt-2 text-muted-foreground">
                   <Heart className="h-4 w-4 mr-1" /> Supporters
                 </div>
@@ -103,7 +134,7 @@ const DashboardHome = () => {
           <Card>
             <CardContent className="pt-6">
               <div className="flex flex-col items-center text-center">
-                <span className="text-4xl font-bold">₹7</span>
+                <span className="text-4xl font-bold">₹{totalEarnings}</span>
                 <div className="flex items-center mt-2 text-muted-foreground">
                   <Calendar className="h-4 w-4 mr-1" /> Last 30 days
                 </div>
@@ -113,7 +144,7 @@ const DashboardHome = () => {
           <Card>
             <CardContent className="pt-6">
               <div className="flex flex-col items-center text-center">
-                <span className="text-4xl font-bold">₹7</span>
+                <span className="text-4xl font-bold">₹{totalEarnings}</span>
                 <div className="flex items-center mt-2 text-muted-foreground">
                   <Clock className="h-4 w-4 mr-1" /> All-time
                 </div>
@@ -131,29 +162,47 @@ const DashboardHome = () => {
             <div className="overflow-x-auto">
               <Table>
                 <TableBody>
-                  {recentSupporters.map((supporter) => (
-                    <TableRow key={supporter.id}>
-                      <TableCell>
-                        <div className="flex items-center gap-3">
-                          <Avatar className="h-10 w-10">
-                            <AvatarImage src={supporter.avatar} alt={supporter.name} />
-                            <AvatarFallback>S</AvatarFallback>
-                          </Avatar>
-                          <div>
-                            <div className="font-medium">{supporter.name}</div>
-                            <div className="text-sm text-muted-foreground">{supporter.email}</div>
+                  {recentSupporters.length > 0 ? (
+                    recentSupporters.map((supporter, index) => (
+                      <TableRow key={supporter.id || index}>
+                        <TableCell>
+                          <div className="flex items-center gap-3">
+                            <Avatar className="h-10 w-10">
+                              <AvatarImage src="/placeholder.svg" alt="Supporter" />
+                              <AvatarFallback>S</AvatarFallback>
+                            </Avatar>
+                            <div>
+                              <div className="font-medium">
+                                {supporter.anonymous ? 'Anonymous' : 'Someone'}
+                              </div>
+                              <div className="text-sm text-muted-foreground">
+                                {supporter.anonymous ? 'Anonymous' : 'anonymous@mail.com'}
+                              </div>
+                            </div>
                           </div>
+                        </TableCell>
+                        <TableCell className="text-right font-medium">₹{supporter.amount}</TableCell>
+                        <TableCell className="text-right text-muted-foreground">
+                          {new Date(supporter.timestamp).toLocaleDateString()}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                            <MoreHorizontal className="h-4 w-4" />
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  ) : (
+                    <TableRow>
+                      <TableCell colSpan={4} className="h-24 text-center">
+                        <div className="flex flex-col items-center justify-center gap-2 py-4">
+                          <Heart className="h-10 w-10 text-muted-foreground/40" />
+                          <p className="text-muted-foreground">No supporters yet</p>
+                          <p className="text-sm text-muted-foreground/60">Share your page to start receiving support</p>
                         </div>
                       </TableCell>
-                      <TableCell className="text-right font-medium">{supporter.amount}</TableCell>
-                      <TableCell className="text-right text-muted-foreground">{supporter.date}</TableCell>
-                      <TableCell className="text-right">
-                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                          <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                      </TableCell>
                     </TableRow>
-                  ))}
+                  )}
                 </TableBody>
               </Table>
             </div>
