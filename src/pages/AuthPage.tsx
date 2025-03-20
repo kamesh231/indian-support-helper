@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Label } from "@/components/ui/label";
 import { Mail, Lock, User } from "lucide-react";
 import { motion } from "framer-motion";
+import { toast } from "sonner";
 
 const AuthPage = () => {
   const { signIn, signUp, signInWithGoogle, user, isLoading } = useAuth();
@@ -30,10 +31,11 @@ const AuthPage = () => {
     try {
       if (activeTab === "login") {
         await signIn(email, password);
+        toast.success("Successfully signed in!");
       } else {
         await signUp(email, password, name);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Authentication error:", error);
     } finally {
       setIsSubmitting(false);
