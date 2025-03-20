@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+
+import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -9,33 +10,89 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { motion } from "framer-motion";
 import { Share2, Edit, MoreHorizontal, Check, X, Heart, Twitter, Facebook, Mail, QrCode, Coffee, EyeOff, Download } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 
 const CreatorPage = () => {
   const { username } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [showShareDialog, setShowShareDialog] = useState(false);
   const [showThankYouDialog, setShowThankYouDialog] = useState(false);
   const [pageLink, setPageLink] = useState(`mochafan.com/${username || "yourusername"}`);
-  const [isSupporter, setIsSupporter] = useState(true);
+  const [isSupporter, setIsSupporter] = useState(false);
   const [supportAmount, setSupportAmount] = useState("");
   const [supporterName, setSupporterName] = useState("");
   const [supporterMessage, setSupporterMessage] = useState("");
   const [makeMonthly, setMakeMonthly] = useState(false);
   const [tipAnonymously, setTipAnonymously] = useState(false);
-
-  const creator = {
-    name: "Kamesh",
-    username: username || "kamesh",
-    avatar: "https://github.com/shadcn.png",
+  const [creatorData, setCreatorData] = useState({
+    name: "",
+    username: username || "yourusername",
+    avatar: "",
     coverPhoto: "https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?q=80&w=2070&auto=format&fit=crop",
-    description: "I write about product management",
-    supporters: 1,
-  };
+    description: "",
+    supporters: 0,
+    creatingText: "",
+  });
+  const [supporters, setSupporters] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const supporters = [
-    { id: 1, name: "Someone", isSupporter: true, message: "" },
-    { id: 2, name: "Someone", isSupporter: true, message: "" },
-  ];
+  useEffect(() => {
+    const fetchCreatorData = async () => {
+      setLoading(true);
+      try {
+        // First try to find by username
+        let { data, error } = await supabase
+          .from('users')
+          .select('*')
+          .eq('username', username)
+          .single();
+          
+        if (error || !data) {
+          // If not found by username and we have a logged-in user, try to get their data
+          if (user) {
+            ({ data, error } = await supabase
+              .from('users')
+              .select('*')
+              .eq('id', user.id)
+              .single());
+          }
+        }
+        
+        if (data) {
+          setCreatorData({
+            name: data.name || "",
+            username: data.username || username || "yourusername",
+            avatar: data.profile_pic || "",
+            coverPhoto: "https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?q=80&w=2070&auto=format&fit=crop",
+            description: data.bio || "",
+            supporters: data.supporter_count || 0,
+            creatingText: data.creating_text || "",
+          });
+          
+          setPageLink(`mochafan.com/${data.username || username || "yourusername"}`);
+          
+          // Fetch supporters for this creator
+          const { data: supportersData, error: supportersError } = await supabase
+            .from('tips')
+            .select('*')
+            .eq('creator_id', data.id)
+            .limit(5);
+            
+          if (!supportersError && supportersData) {
+            setSupporters(supportersData);
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching creator data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchCreatorData();
+  }, [username, user]);
 
   const copyPageLink = () => {
     navigator.clipboard.writeText(`https://${pageLink}`);
@@ -49,7 +106,7 @@ const CreatorPage = () => {
   };
 
   const handleEditPage = () => {
-    navigate(`/creator/${username || "yourusername"}/edit`);
+    navigate(`/creator/${creatorData.username}/edit`);
   };
 
   const downloadThankYouImage = () => {
@@ -61,18 +118,34 @@ const CreatorPage = () => {
     }, 500);
   };
 
+  const getInitials = (name) => {
+    if (!name) return "U";
+    return name.split(' ').map(part => part[0]?.toUpperCase() || '').join('').substring(0, 2);
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       <header className="sticky top-0 bg-white shadow-sm z-10">
         <div className="container mx-auto px-4 py-2 flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <Avatar className="h-10 w-10">
-              <AvatarImage src={creator.avatar} />
-              <AvatarFallback>KM</AvatarFallback>
+              <AvatarImage src={creatorData.avatar} />
+              <AvatarFallback>{getInitials(creatorData.name)}</AvatarFallback>
             </Avatar>
             <div>
-              <h2 className="font-semibold">{creator.name}</h2>
-              <p className="text-sm text-muted-foreground">{creator.supporters} supporter</p>
+              <h2 className="font-semibold">{creatorData.name || "Creator"}</h2>
+              <p className="text-sm text-muted-foreground">{creatorData.supporters} supporter{creatorData.supporters !== 1 ? 's' : ''}</p>
             </div>
           </div>
           
@@ -88,12 +161,14 @@ const CreatorPage = () => {
                 <Share2 className="h-4 w-4" />
               </Button>
               
-              <Button 
-                variant="outline"
-                onClick={handleEditPage}
-              >
-                Edit page
-              </Button>
+              {user && (
+                <Button 
+                  variant="outline"
+                  onClick={handleEditPage}
+                >
+                  Edit page
+                </Button>
+              )}
               
               <Button>+ Create</Button>
               
@@ -102,8 +177,8 @@ const CreatorPage = () => {
               </Button>
               
               <Avatar className="h-8 w-8">
-                <AvatarImage src="https://github.com/shadcn.png" />
-                <AvatarFallback>U</AvatarFallback>
+                <AvatarImage src={user?.user_metadata?.avatar_url || ""} />
+                <AvatarFallback>{user ? getInitials(user.user_metadata?.name || "U") : "U"}</AvatarFallback>
               </Avatar>
             </div>
           </div>
@@ -112,7 +187,7 @@ const CreatorPage = () => {
 
       <div 
         className="w-full h-64 bg-cover bg-center"
-        style={{ backgroundImage: `url(${creator.coverPhoto})` }}
+        style={{ backgroundImage: `url(${creatorData.coverPhoto})` }}
       />
 
       <div className="container mx-auto px-4 md:px-8 max-w-5xl">
@@ -120,10 +195,14 @@ const CreatorPage = () => {
           <div className="w-full md:w-1/2 space-y-6">
             <div className="bg-white rounded-lg shadow-sm p-6">
               <div className="flex items-start justify-between mb-4">
-                <h3 className="text-xl font-semibold">About {creator.name}</h3>
-                <Button variant="ghost" size="sm" onClick={handleEditPage}>Edit</Button>
+                <h3 className="text-xl font-semibold">About {creatorData.name || "Creator"}</h3>
+                {user && <Button variant="ghost" size="sm" onClick={handleEditPage}>Edit</Button>}
               </div>
-              <p className="text-gray-700">{creator.description}</p>
+              {creatorData.description ? (
+                <p className="text-gray-700">{creatorData.description}</p>
+              ) : (
+                <p className="text-gray-500 italic">This creator hasn't added any information yet.</p>
+              )}
               
               <div className="mt-4 flex items-center">
                 <Button variant="ghost" size="sm" className="text-gray-500">
@@ -134,30 +213,34 @@ const CreatorPage = () => {
 
             <div className="bg-white rounded-lg shadow-sm p-6">
               <h3 className="text-xl font-semibold mb-4">Recent supporters</h3>
-              <div className="space-y-6">
-                {supporters.map((supporter) => (
-                  <div key={supporter.id} className="flex items-start space-x-3">
-                    <Avatar className="h-12 w-12 bg-gray-100">
-                      <AvatarFallback>
-                        <Coffee className="h-6 w-6 text-gray-400" />
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1">
-                      <p className="font-medium">{supporter.name} became a supporter.</p>
-                      <div className="flex items-center mt-1 space-x-4">
-                        <Button variant="ghost" size="sm" className="text-xs h-7 px-2">Reply</Button>
-                        <Button variant="ghost" size="sm" className="text-xs h-7 px-2">Share</Button>
+              {supporters && supporters.length > 0 ? (
+                <div className="space-y-6">
+                  {supporters.map((supporter, index) => (
+                    <div key={index} className="flex items-start space-x-3">
+                      <Avatar className="h-12 w-12 bg-gray-100">
+                        <AvatarFallback>
+                          <Coffee className="h-6 w-6 text-gray-400" />
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="flex-1">
+                        <p className="font-medium">{supporter.anonymous ? "Anonymous" : "Someone"} became a supporter.</p>
+                        <div className="flex items-center mt-1 space-x-4">
+                          <Button variant="ghost" size="sm" className="text-xs h-7 px-2">Reply</Button>
+                          <Button variant="ghost" size="sm" className="text-xs h-7 px-2">Share</Button>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-gray-500 italic">No supporters yet. Be the first to support!</p>
+              )}
             </div>
           </div>
 
           <div className="w-full md:w-1/2 space-y-6">
             <div className="bg-white rounded-lg shadow-sm p-6">
-              <h3 className="text-xl font-semibold mb-4">Support {creator.name}</h3>
+              <h3 className="text-xl font-semibold mb-4">Support {creatorData.name || "Creator"}</h3>
               
               <div className="space-y-4">
                 <div>
@@ -251,7 +334,7 @@ const CreatorPage = () => {
 
       <Dialog open={showShareDialog} onOpenChange={setShowShareDialog}>
         <DialogContent className="max-w-md">
-          <DialogTitle className="text-center">Share {creator.name}'s page</DialogTitle>
+          <DialogTitle className="text-center">Share {creatorData.name || "Creator"}'s page</DialogTitle>
           <div className="grid grid-cols-2 gap-4 mb-6">
             <Button variant="outline" className="flex items-center gap-2 justify-center">
               <Twitter className="h-5 w-5" />
@@ -333,7 +416,7 @@ const CreatorPage = () => {
           <div className="py-6">
             <div className="bg-gradient-to-r from-primary/20 to-secondary p-6 rounded-lg text-center space-y-3">
               <div className="text-4xl">🎉</div>
-              <h3 className="text-xl font-bold">You just supported {creator.name}</h3>
+              <h3 className="text-xl font-bold">You just supported {creatorData.name || "Creator"}</h3>
               <p className="text-lg">With ₹{supportAmount || "100"}</p>
               {!tipAnonymously && supporterName && (
                 <p className="text-sm text-gray-600">From: {supporterName}</p>

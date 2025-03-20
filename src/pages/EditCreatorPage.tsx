@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -32,6 +33,7 @@ const EditCreatorPage = () => {
   const [iconText, setIconText] = useState("coffee");
   const [themeColor, setThemeColor] = useState("#5F7FFF");
   const [showSupporterCount, setShowSupporterCount] = useState(true);
+  const [savedUsername, setSavedUsername] = useState("");
   
   // Sidebar arrangement
   const [sidebarItems, setSidebarItems] = useState([
@@ -56,8 +58,15 @@ const EditCreatorPage = () => {
         
         if (data) {
           setName(data.name || "");
-          setCreatingText("");
+          setCreatingText(data.creating_text || "");
           setAbout(data.bio || "");
+          setSavedUsername(data.username || "");
+          setVideoLink(data.video_link || "");
+          setSocialLink(data.social_link || "");
+          setPageIcon(data.page_icon || "coffee");
+          setIconText(data.icon_text || "coffee");
+          setThemeColor(data.theme_color || "#5F7FFF");
+          setShowSupporterCount(data.show_supporter_count !== false);
         }
       } catch (error) {
         console.error('Error fetching creator data:', error);
@@ -77,18 +86,28 @@ const EditCreatorPage = () => {
         return;
       }
       
+      const newUsername = name.toLowerCase().replace(/\s+/g, "");
+      
       const { error } = await supabase
         .from('users')
         .update({
           name,
           bio: about,
+          creating_text: creatingText,
+          username: newUsername,
+          video_link: videoLink,
+          social_link: socialLink,
+          page_icon: pageIcon,
+          icon_text: iconText,
+          theme_color: themeColor,
+          show_supporter_count: showSupporterCount,
         })
         .eq('id', user.id);
         
       if (error) throw error;
       
       toast.success("Changes saved successfully");
-      navigate(`/creator/${username || user.id}`);
+      navigate(`/creator/${newUsername}`);
     } catch (error) {
       console.error('Error saving profile:', error);
       toast.error("Failed to save changes");
@@ -98,7 +117,7 @@ const EditCreatorPage = () => {
   };
 
   const handleCancel = () => {
-    navigate(`/creator/${username || "yourusername"}`);
+    navigate(`/creator/${savedUsername || "yourusername"}`);
   };
 
   const iconOptions = [
