@@ -9,16 +9,156 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      payout_requests: {
+        Row: {
+          amount_requested: number
+          created_at: string
+          creator_id: string
+          id: string
+          payout_reference: string | null
+          status: Database["public"]["Enums"]["payout_status"]
+        }
+        Insert: {
+          amount_requested: number
+          created_at?: string
+          creator_id: string
+          id?: string
+          payout_reference?: string | null
+          status?: Database["public"]["Enums"]["payout_status"]
+        }
+        Update: {
+          amount_requested?: number
+          created_at?: string
+          creator_id?: string
+          id?: string
+          payout_reference?: string | null
+          status?: Database["public"]["Enums"]["payout_status"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payout_requests_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tips: {
+        Row: {
+          amount: number
+          anonymous: boolean | null
+          creator_id: string
+          gst: number
+          id: string
+          net_amount: number
+          platform_fee: number
+          timestamp: string
+        }
+        Insert: {
+          amount: number
+          anonymous?: boolean | null
+          creator_id: string
+          gst: number
+          id?: string
+          net_amount: number
+          platform_fee: number
+          timestamp?: string
+        }
+        Update: {
+          amount?: number
+          anonymous?: boolean | null
+          creator_id?: string
+          gst?: number
+          id?: string
+          net_amount?: number
+          platform_fee?: number
+          timestamp?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tips_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      users: {
+        Row: {
+          bank_account: string | null
+          bio: string | null
+          created_at: string
+          email: string
+          id: string
+          ifsc_code: string | null
+          kyc_completed: boolean | null
+          name: string
+          profile_pic: string | null
+          total_tips: number | null
+        }
+        Insert: {
+          bank_account?: string | null
+          bio?: string | null
+          created_at?: string
+          email: string
+          id: string
+          ifsc_code?: string | null
+          kyc_completed?: boolean | null
+          name: string
+          profile_pic?: string | null
+          total_tips?: number | null
+        }
+        Update: {
+          bank_account?: string | null
+          bio?: string | null
+          created_at?: string
+          email?: string
+          id?: string
+          ifsc_code?: string | null
+          kyc_completed?: boolean | null
+          name?: string
+          profile_pic?: string | null
+          total_tips?: number | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      create_tip: {
+        Args: {
+          p_creator_id: string
+          p_amount: number
+          p_anonymous?: boolean
+        }
+        Returns: string
+      }
+      get_top_creators: {
+        Args: {
+          limit_count?: number
+        }
+        Returns: {
+          id: string
+          name: string
+          profile_pic: string
+          total_tips: number
+          supporter_count: number
+        }[]
+      }
+      request_payout: {
+        Args: {
+          p_creator_id: string
+          p_amount: number
+        }
+        Returns: string
+      }
     }
     Enums: {
-      [_ in never]: never
+      payout_status: "pending" | "approved" | "paid"
     }
     CompositeTypes: {
       [_ in never]: never
