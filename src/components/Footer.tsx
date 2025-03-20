@@ -11,7 +11,7 @@ const Footer = () => {
           <div className="col-span-1 md:col-span-1">
             <Link to="/" className="flex items-center space-x-2 mb-4">
               <Coffee className="h-6 w-6 text-primary" />
-              <span className="font-bold text-xl">SupportSathi</span>
+              <span className="font-bold text-xl">PledgePe</span>
             </Link>
             <p className="text-muted-foreground mb-4">
               A platform for Indian creators to receive support and build community.
@@ -68,7 +68,7 @@ const Footer = () => {
         
         <div className="border-t pt-8 flex flex-col md:flex-row justify-between items-center">
           <p className="text-sm text-muted-foreground mb-4 md:mb-0">
-            © {new Date().getFullYear()} SupportSathi. All rights reserved.
+            © {new Date().getFullYear()} PledgePe. All rights reserved.
           </p>
           <div className="flex items-center space-x-2">
             <span className="w-2 h-2 bg-green-500 rounded-full"></span>
