@@ -12,6 +12,7 @@ import NotFound from "./pages/NotFound";
 import DashboardHome from "./pages/dashboard/DashboardHome";
 import SupportersPage from "./pages/dashboard/SupportersPage";
 import PayoutsPage from "./pages/dashboard/PayoutsPage";
+import ButtonsGraphicsPage from "./pages/dashboard/ButtonsGraphicsPage";
 
 const queryClient = new QueryClient();
 
@@ -31,6 +32,7 @@ const App = () => (
             <Route path="/dashboard" element={<DashboardHome />} />
             <Route path="/dashboard/supporters" element={<SupportersPage />} />
             <Route path="/dashboard/payouts" element={<PayoutsPage />} />
+            <Route path="/dashboard/buttons-graphics" element={<ButtonsGraphicsPage />} />
             
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
