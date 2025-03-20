@@ -1,7 +1,7 @@
 
 import * as React from "react";
 import { motion } from "framer-motion";
-import { IndianRupee, Coffee, Users, Palette, Zap } from "lucide-react";
+import { IndianRupee, Coffee, Users, Palette, Zap, Percent } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const features = [
@@ -35,6 +35,12 @@ const features = [
     description: "Get started in minutes with a simple verification process tailored for Indians.",
     color: "bg-green-100 text-green-600",
   },
+  {
+    icon: <Percent className="h-6 w-6" />,
+    title: "Low Platform Fee",
+    description: "Only 3.5% platform fee on payments and free payouts* to maximize your earnings.",
+    color: "bg-red-100 text-red-600",
+  },
 ];
 
 const FeatureCard = ({ 
@@ -57,6 +63,11 @@ const FeatureCard = ({
       </div>
       <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
       <p className="text-muted-foreground">{feature.description}</p>
+      {feature.title === "Low Platform Fee" && (
+        <p className="text-xs text-muted-foreground mt-2">
+          *Free for amounts over ₹1000
+        </p>
+      )}
     </motion.div>
   );
 };

@@ -6,7 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const testimonials = [
   {
-    quote: "SupportSathi helped me monetize my blog content directly from my Indian audience without any hassle.",
+    quote: "MochaFan helped me monetize my blog content directly from my Indian audience without any hassle.",
     name: "Priya Sharma",
     role: "Food Blogger",
     avatar: "/avatars/priya.jpg",
@@ -93,7 +93,7 @@ const Testimonials = () => {
             transition={{ duration: 0.5, delay: 0.1 }}
             className="text-muted-foreground text-lg max-w-2xl mx-auto"
           >
-            Hear what creators are saying about their experience with SupportSathi
+            Hear what creators are saying about their experience with MochaFan
           </motion.p>
         </div>
 

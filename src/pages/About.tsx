@@ -20,7 +20,7 @@ const AboutPage = () => {
               transition={{ duration: 0.5 }}
               className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 tracking-tight"
             >
-              About SupportSathi
+              About MochaFan
             </motion.h1>
             <motion.p
               initial={{ opacity: 0, y: 20 }}
@@ -45,7 +45,7 @@ const AboutPage = () => {
               >
                 <h2 className="text-3xl font-bold mb-6">Our Mission</h2>
                 <p className="text-lg text-muted-foreground mb-6">
-                  SupportSathi was founded with a simple mission — to help Indian creators unlock their creative potential by providing them with tools to build sustainable income from their audience.
+                  MochaFan was founded with a simple mission — to help Indian creators unlock their creative potential by providing them with tools to build sustainable income from their audience.
                 </p>
                 <p className="text-lg text-muted-foreground">
                   We believe that creators in India face unique challenges, from payment infrastructure to cultural expectations. That's why we've built a platform specifically tailored to the Indian ecosystem.
@@ -89,6 +89,16 @@ const AboutPage = () => {
                       <p className="text-muted-foreground">Foster meaningful connections between creators and supporters.</p>
                     </div>
                   </div>
+
+                  <div className="flex items-start">
+                    <div className="bg-white p-3 rounded-xl mr-4">
+                      <Coffee className="h-6 w-6 text-primary" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-lg mb-2">Low Platform Fee</h3>
+                      <p className="text-muted-foreground">Just 3.5% fee on payments and free payouts* to maximize creator earnings.</p>
+                    </div>
+                  </div>
                 </div>
               </motion.div>
             </div>
@@ -122,7 +132,7 @@ const AboutPage = () => {
                 <div className="mb-4 font-bold text-5xl text-primary/20">01</div>
                 <h3 className="text-xl font-semibold mb-4">The Beginning</h3>
                 <p className="text-muted-foreground">
-                  SupportSathi started in 2023 when our founders, passionate content creators themselves, realized there wasn't a simple solution for Indian creators to receive direct support from their audience.
+                  MochaFan started in 2023 when our founders, passionate content creators themselves, realized there wasn't a simple solution for Indian creators to receive direct support from their audience.
                 </p>
               </motion.div>
               
@@ -150,7 +160,57 @@ const AboutPage = () => {
                 <div className="mb-4 font-bold text-5xl text-primary/20">03</div>
                 <h3 className="text-xl font-semibold mb-4">The Solution</h3>
                 <p className="text-muted-foreground">
-                  SupportSathi was built from the ground up for Indian creators, with local payment integrations, compliance with Indian regulations, and a focus on the unique creator ecosystem in India.
+                  MochaFan was built from the ground up for Indian creators, with local payment integrations, compliance with Indian regulations, and a focus on the unique creator ecosystem in India.
+                </p>
+              </motion.div>
+            </div>
+          </div>
+        </section>
+
+        {/* Fee Information Section */}
+        <section className="px-4 md:px-8 mb-20 bg-white py-12 rounded-lg shadow-sm">
+          <div className="max-w-5xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
+              className="text-center mb-8"
+            >
+              <h2 className="text-3xl font-bold mb-4">Transparent Pricing</h2>
+              <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
+                We believe in keeping more money in creators' pockets
+              </p>
+            </motion.div>
+            
+            <div className="flex flex-col md:flex-row items-center justify-center gap-8">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: 0.1 }}
+                className="bg-secondary/30 p-6 rounded-2xl w-full max-w-md"
+              >
+                <h3 className="text-2xl font-bold mb-3 text-center">Only 3.5% Platform Fee</h3>
+                <p className="text-center text-muted-foreground mb-6">
+                  One of the lowest rates in the industry, maximizing what creators take home
+                </p>
+                <ul className="space-y-3">
+                  <li className="flex items-center">
+                    <div className="h-5 w-5 rounded-full bg-primary/20 flex items-center justify-center text-primary mr-3">✓</div>
+                    <span>No hidden charges</span>
+                  </li>
+                  <li className="flex items-center">
+                    <div className="h-5 w-5 rounded-full bg-primary/20 flex items-center justify-center text-primary mr-3">✓</div>
+                    <span>Transparent dashboard reporting</span>
+                  </li>
+                  <li className="flex items-center">
+                    <div className="h-5 w-5 rounded-full bg-primary/20 flex items-center justify-center text-primary mr-3">✓</div>
+                    <span>Free payouts to your bank account*</span>
+                  </li>
+                </ul>
+                <p className="text-xs text-muted-foreground mt-6">
+                  *Free payouts available for amounts over ₹1000, smaller amounts may incur a nominal fee.
                 </p>
               </motion.div>
             </div>
