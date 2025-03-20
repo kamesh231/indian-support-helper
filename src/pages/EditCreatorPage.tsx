@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -57,9 +56,8 @@ const EditCreatorPage = () => {
         
         if (data) {
           setName(data.name || "");
-          setCreatingText(data.creating_text || "");
+          setCreatingText("");
           setAbout(data.bio || "");
-          // Set other fields if they exist in the database
         }
       } catch (error) {
         console.error('Error fetching creator data:', error);
@@ -79,13 +77,11 @@ const EditCreatorPage = () => {
         return;
       }
       
-      // Update user profile in database
       const { error } = await supabase
         .from('users')
         .update({
           name,
           bio: about,
-          // Add other fields as needed
         })
         .eq('id', user.id);
         
