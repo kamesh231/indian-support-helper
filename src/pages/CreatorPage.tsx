@@ -110,8 +110,8 @@ const CreatorPage = () => {
 
       <div className="container mx-auto px-4 md:px-8 max-w-5xl">
         <div className="flex flex-col md:flex-row gap-8 -mt-8">
-          {/* Left Column */}
-          <div className="w-full md:w-2/3 space-y-6">
+          {/* Left Column - Reduced width from 2/3 to 1/2 */}
+          <div className="w-full md:w-1/2 space-y-6">
             <div className="bg-white rounded-lg shadow-sm p-6">
               <div className="flex items-start justify-between mb-4">
                 <h3 className="text-xl font-semibold">About {creator.name}</h3>
@@ -149,8 +149,8 @@ const CreatorPage = () => {
             </div>
           </div>
 
-          {/* Right Column */}
-          <div className="w-full md:w-1/3 space-y-6">
+          {/* Right Column - Increased width from 1/3 to 1/2 */}
+          <div className="w-full md:w-1/2 space-y-6">
             <div className="bg-white rounded-lg shadow-sm p-6">
               <h3 className="text-xl font-semibold mb-4">Support {creator.name}</h3>
               
@@ -172,8 +172,20 @@ const CreatorPage = () => {
                     </div>
                   </div>
                   <div className="flex divide-x border border-t-0 rounded-b-md overflow-hidden mt-px">
-                    <Button variant="custom" className="flex-1 rounded-none px-2 py-1 h-10 bg-gray-50 hover:bg-gray-100">+1000</Button>
-                    <Button variant="custom" className="flex-1 rounded-none px-2 py-1 h-10 bg-gray-50 hover:bg-gray-100">+2000</Button>
+                    <Button 
+                      variant="custom" 
+                      className="flex-1 rounded-none px-2 py-1 h-10 bg-gray-50 hover:bg-gray-100"
+                      onClick={() => setSupportAmount((prev) => (Number(prev) + 1000).toString())}
+                    >
+                      +1000
+                    </Button>
+                    <Button 
+                      variant="custom" 
+                      className="flex-1 rounded-none px-2 py-1 h-10 bg-gray-50 hover:bg-gray-100"
+                      onClick={() => setSupportAmount((prev) => (Number(prev) + 2000).toString())}
+                    >
+                      +2000
+                    </Button>
                   </div>
                 </div>
                 
