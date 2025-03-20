@@ -27,7 +27,7 @@ export const useCreatorProfile = (creatorId: string | undefined) => {
       
       const { data, error } = await supabase
         .from("users")
-        .select("*")
+        .select("id, name, bio, profile_pic, total_tips, supporter_count, username, creating_text, video_link, social_link, page_icon, icon_text, theme_color, show_supporter_count")
         .eq("id", creatorId)
         .single();
       
@@ -36,7 +36,7 @@ export const useCreatorProfile = (creatorId: string | undefined) => {
         throw error;
       }
       
-      return data;
+      return data as Creator;
     },
     enabled: !!creatorId,
   });

@@ -90,37 +90,64 @@ export type Database = {
           bank_account: string | null
           bio: string | null
           created_at: string
+          creating_text: string | null
           email: string
+          icon_text: string | null
           id: string
           ifsc_code: string | null
           kyc_completed: boolean | null
           name: string
+          page_icon: string | null
           profile_pic: string | null
+          show_supporter_count: boolean | null
+          social_link: string | null
+          supporter_count: number | null
+          theme_color: string | null
           total_tips: number | null
+          username: string | null
+          video_link: string | null
         }
         Insert: {
           bank_account?: string | null
           bio?: string | null
           created_at?: string
+          creating_text?: string | null
           email: string
+          icon_text?: string | null
           id: string
           ifsc_code?: string | null
           kyc_completed?: boolean | null
           name: string
+          page_icon?: string | null
           profile_pic?: string | null
+          show_supporter_count?: boolean | null
+          social_link?: string | null
+          supporter_count?: number | null
+          theme_color?: string | null
           total_tips?: number | null
+          username?: string | null
+          video_link?: string | null
         }
         Update: {
           bank_account?: string | null
           bio?: string | null
           created_at?: string
+          creating_text?: string | null
           email?: string
+          icon_text?: string | null
           id?: string
           ifsc_code?: string | null
           kyc_completed?: boolean | null
           name?: string
+          page_icon?: string | null
           profile_pic?: string | null
+          show_supporter_count?: boolean | null
+          social_link?: string | null
+          supporter_count?: number | null
+          theme_color?: string | null
           total_tips?: number | null
+          username?: string | null
+          video_link?: string | null
         }
         Relationships: []
       }

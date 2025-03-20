@@ -23,6 +23,15 @@ interface UserProfile {
   total_tips: number;
   bank_account: string;
   ifsc_code: string;
+  username?: string;
+  creating_text?: string;
+  video_link?: string;
+  social_link?: string;
+  page_icon?: string;
+  icon_text?: string;
+  theme_color?: string;
+  show_supporter_count?: boolean;
+  supporter_count?: number;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -164,4 +173,13 @@ export interface Creator {
   profile_pic?: string;
   total_tips: number;
   supporter_count: number;
+  username?: string;
+  creating_text?: string;
+  video_link?: string;
+  social_link?: string;
+  page_icon?: string;
+  icon_text?: string;
+  theme_color?: string;
+  show_supporter_count?: boolean;
+  bio?: string;
 }
